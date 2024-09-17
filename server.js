@@ -13,8 +13,10 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
 // استيراد المسارات
 const graveRoutes = require('./routes/graveRoutes');
 const authRoutes = require('./routes/authRoutes');
+const suggestionRoutes = require('./routes/suggestionRoutes');
 app.use('/api/graves', graveRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/suggestion', suggestionRoutes);
 // بدء السيرفر
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

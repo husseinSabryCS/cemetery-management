@@ -10,10 +10,6 @@ const graveSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  capacity: {
-    type: Number,
-    required: true, // السعة القصوى للمقبرة
-  },
   buriedPersons: [
     {
       name: { type: String, required: true },
@@ -22,31 +18,11 @@ const graveSchema = new mongoose.Schema({
   ],
   availableAfter: {   
     type: Date,
-    default: function () {
-      if (this.buriedPersons.length > 0) {
-        // حساب 6 أشهر (180 يومًا) بعد تاريخ آخر دفن
-        return new Date(this.buriedPersons[this.buriedPersons.length - 1].burialDate.getTime() + 6 * 30 * 24 * 60 * 60 * 1000);
-      }
-      return null;
-    },
   },
   status: {
     type: String,
-    default: function () {
-      const currentDate = new Date();
-      if (this.buriedPersons.length >= this.capacity) {
-        return 'غير متاحة'; // إذا كانت المقبرة ممتلئة
-      } 
-      
-      if (this.buriedPersons.length > 0) {
-        const lastBurialDate = this.buriedPersons[this.buriedPersons.length - 1].burialDate;
-        const sixMonthsAfterLastBurial = new Date(lastBurialDate.getTime() + 6 * 30 * 24 * 60 * 60 * 1000); // تقريب 6 أشهر
-
-        // إذا مر 6 أشهر تكون الحالة "متاحة"، وإذا لم تمر تكون "غير متاحة"
-        return currentDate >= sixMonthsAfterLastBurial ? 'متاحة' : 'غير متاحة';
-      }
-      return 'متاحة'; // إذا لم يكن هناك دفن، تكون متاحة افتراضيًا
-    },
+    default: 'متاحة', // تعيين الحالة الافتراضية
+    enum: ['متاحة', 'غير متاحة', 'ممتلئة'],
   },
 });
 

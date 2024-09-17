@@ -8,15 +8,15 @@ const {createSuggestion,
   } = require('../controllers/SuggestionController');
 
 // 1. إضافة اقتراح جديد
-router.post('/suggestions', createSuggestion);
+router.post('/', createSuggestion);
 
 // 2. جلب جميع الاقتراحات
-router.get('/suggestions', getAllSuggestions);
+router.get('/', getAllSuggestions);
 
 // 3. جلب الاقتراحات بناءً على حالتها
-router.get('/suggestions/status/:status', getSuggestionsByStatus);
+router.get('/status/:status', getSuggestionsByStatus);
 
 // 4. تحديث حالة اقتراح (للإدمن)
-router.put('/suggestions/:id/status', updateSuggestionStatus);
+router.put('/status/:id', updateSuggestionStatus);
 
 module.exports = router;

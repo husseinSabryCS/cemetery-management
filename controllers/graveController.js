@@ -1,10 +1,10 @@
 const Grave = require('../models/Grave');
-
+const cron = require('node-cron');
 // إنشاء مقبرة جديدة
 const createGrave = async (req, res) => {
   try {
-    const { gender, number, capacity } = req.body; // إضافة السعة
-    const newGrave = new Grave({ gender, number, capacity });
+    const { gender, number } = req.body;
+    const newGrave = new Grave({ gender, number });
     await newGrave.save();
     res.status(201).json(newGrave);
   } catch (error) {
@@ -12,7 +12,7 @@ const createGrave = async (req, res) => {
   }
 };
 
-// إضافة شخص مدفون
+// إضافة شخص مدفون وتحديث حالة المقبرة إذا كانت ممتلئة
 const buryPerson = async (req, res) => {
   try {
     const { name, burialDate } = req.body;
@@ -20,20 +20,40 @@ const buryPerson = async (req, res) => {
 
     if (!grave) return res.status(404).json({ message: 'Grave not found' });
 
-    // التحقق مما إذا كانت المقبرة ممتلئة
-    if (grave.buriedPersons.length >= grave.capacity) {
-      return res.status(400).json({ message: 'Grave is full' });
+    // Handle cases for unavailable graves
+    if (grave.status === 'غير متاحة') {
+      const lastBurialDate = grave.buriedPersons[grave.buriedPersons.length - 1].burialDate;
+      const sixMonthsLater = new Date(new Date(lastBurialDate).getTime() + 6 * 30 * 24 * 60 * 60 * 1000);
+      const daysUntilAvailable = Math.ceil((sixMonthsLater - new Date()) / (1000 * 60 * 60 * 24));
+      if(daysUntilAvailable>0){
+      return res.status(400).json({
+        message: 'المقبرة غير متاحة في الوقت الحالي',
+        daysUntilAvailable: `ستكون متاحة بعد ${daysUntilAvailable} يوم/أيام.`
+      });
+      // حساب المدة المتبقية بناءً على تاريخ آخر دفن
+    }
     }
 
-    // إضافة المدفون الجديد
+    // Handle case for full graves
+    if (grave.status === 'ممتلئة') {
+      return res.status(400).json({ message: 'المقبرة قد امتلأت' });
+    }
+
+    // Add the new burial
     grave.buriedPersons.push({ name, burialDate });
-    grave.availableAfter = new Date(new Date(burialDate).getTime() + 6 * 30 * 24 * 60 * 60 * 1000); // تحديث ليصبح 6 أشهر
+
+    // Update grave status after new burial
+    grave.status = 'غير متاحة';
+    grave.availableAfter = new Date(new Date(burialDate).getTime() + 6 * 30 * 24 * 60 * 60 * 1000); // Available after 6 months
+
     await grave.save();
-    res.status(201).json(grave);
+    return res.status(201).json(grave);
   } catch (error) {
-    res.status(500).json({ message: 'Error adding burial', error });
+    return res.status(500).json({ message: 'Error adding burial', error });
   }
 };
+
+
 
 // التحقق من حالة المقبرة (متاحة أم لا)
 const checkAvailability = async (req, res) => {
@@ -41,10 +61,9 @@ const checkAvailability = async (req, res) => {
     const grave = await Grave.findById(req.params.id);
     if (!grave) return res.status(404).json({ message: 'Grave not found' });
 
-    // إضافة التحقق من السعة
-    const available = grave.buriedPersons.length < grave.capacity && (grave.availableAfter && grave.availableAfter <= new Date());
+    const available = grave.availableAfter <= new Date();
     
-    res.json({ available, availableAfter: grave.availableAfter });
+    res.json({ available, availableAfter: grave.availableAfter }); 
   } catch (error) {
     res.status(500).json({ message: 'Error fetching availability', error });
   }
@@ -53,26 +72,21 @@ const checkAvailability = async (req, res) => {
 // جلب كل المقابر المتاحة
 const getAvailableGraves = async (req, res) => {
   try {
-    const availableGraves = await Grave.find({
-      availableAfter: { $lte: new Date() },
-      buriedPersons: { $lt: '$capacity' }, // إضافة شرط السعة
-    });
+    const availableGraves = await Grave.find({ status: 'متاحة' }); // تعديل بناء الجملة الصحيح
     res.status(200).json(availableGraves);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching available graves', error });
   }
 };
 
+
 // جلب كل المقابر غير المتاحة وتوضيح متى ستصبح متاحة
 const getUnavailableGraves = async (req, res) => {
   try {
-    const unavailableGraves = await Grave.find({
-      availableAfter: { $gt: new Date() },
-    }).select('number availableAfter');
-
-    res.status(200).json(unavailableGraves);
+    const availableGraves = await Grave.find({ status: 'غير متاحة' }); // تعديل بناء الجملة الصحيح
+    res.status(200).json(availableGraves);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching unavailable graves', error });
+    res.status(500).json({ message: 'Error fetching available graves', error });
   }
 };
 
@@ -95,6 +109,22 @@ const getGravesWithBuriedPersons = async (req, res) => {
     res.status(500).json({ message: 'Error fetching graves with buried persons', error });
   }
 };
+// جلب تفاصيل مقبرة معينة عن طريق ID
+const getGraveById = async (req, res) => {
+  try {
+    const graveId = req.params.id; // الحصول على ID من الطلب
+    const grave = await Grave.findById(graveId).select('number gender buriedPersons');
+
+    if (!grave) {
+      return res.status(404).json({ message: 'Grave not found' }); // في حال عدم العثور على المقبرة
+    }
+
+    res.status(200).json(grave); // إعادة تفاصيل المقبرة في حالة النجاح
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching grave details', error });
+  }
+};
+
 
 // جلب المقابر الخاصة بالنساء
 const getFemaleGraves = async (req, res) => {
@@ -175,6 +205,71 @@ const getRecentBurials = async (req, res) => {
   }
 };
 
+// فانكشن لتحديث حالة المقبرة لتصبح ممتلئة
+const updateGraveToFull = async (req, res) => {
+  try {
+    const graveId = req.params.id;
+    
+    // العثور على المقبرة
+    const grave = await Grave.findById(graveId);
+
+    if (!grave) return res.status(404).json({ message: 'Grave not found' });
+
+    // التحقق من حالة المقبرة لتجنب التكرار
+    if (grave.status === 'ممتلئة') {
+      return res.status(400).json({ message: 'Grave is already marked as full' });
+    }
+
+    // تحديث حالة المقبرة لتصبح ممتلئة
+    grave.status = 'ممتلئة'; // تعيين الحالة كممتلئة
+    grave.availableAfter = null; // المقبرة لن تكون متاحة مجددًا
+
+    await grave.save();
+    res.status(200).json(grave);
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating grave to full', error });
+  }
+};
+
+
+
+// جدولة المهمة لتعمل كل يوم في منتصف الليل (00:00)
+cron.schedule('0 0 * * *', async () => {
+  try {
+    console.log('Running cron job to update grave statuses...');
+
+    // البحث عن المقابر غير المتاحة
+    const graves = await Grave.find({ status: 'غير متاحة' });
+    if(graves.length<=0){
+   console.log("done");
+         
+
+    }
+   
+    graves.forEach(async (grave) => {
+      if (grave.buriedPersons && grave.buriedPersons.length > 0) {
+        // احصل على تاريخ آخر دفن
+        const lastBurialDate = grave.buriedPersons[grave.buriedPersons.length - 1].burialDate;
+        const sixMonthsLater = new Date(new Date(lastBurialDate).getTime() + 6 * 30 * 24 * 60 * 60 * 1000);
+
+        // التحقق مما إذا مرت 6 أشهر على آخر دفن
+        if (new Date() >= sixMonthsLater) {
+          grave.status = 'متاحة';  // تحديث الحالة إلى "متاحة"
+          grave.availableAfter = null;  // إزالة تاريخ الإتاحة لأنه لم يعد ضروريًا
+          await grave.save();  // حفظ التحديثات في قاعدة البيانات
+          console.log(`Updated grave ID ${grave._id} to 'متاحة'`);
+        }
+      } else {
+        console.log(`Grave ID ${grave._id} has no buried persons.`);
+      }
+    });
+  } catch (error) {
+    console.error('Error updating grave statuses:', error);
+  }
+});
+
+
+
 module.exports = {
   createGrave,
   buryPerson,
@@ -186,8 +281,10 @@ module.exports = {
   getFemaleGraves,
   getMaleGraves,
   getBoneGraves,
-  getTotalDeaths, // عدد الوفيات الإجمالي
-  getMaleDeaths,  // عدد وفيات الرجال
-  getFemaleDeaths, // عدد وفيات النساء
-  getRecentBurials // الأشخاص الذين تم دفنهم في آخر 3 أيام
+  getTotalDeaths,
+  getMaleDeaths,
+  getFemaleDeaths,
+  getRecentBurials,
+  updateGraveToFull,
+  getGraveById
 };

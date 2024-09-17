@@ -14,7 +14,9 @@ const {
   getTotalDeaths,
   getMaleDeaths,
   getFemaleDeaths,
-  getRecentBurials
+  getRecentBurials,
+  updateGraveToFull,
+  getGraveById
 } = require('../controllers/graveController');
 
 // 1. إنشاء مقبرة جديدة
@@ -59,5 +61,11 @@ router.get('/femaleDeaths', getFemaleDeaths);
 // 14. جلب الأشخاص المدفونين في آخر 3 أيام
 router.get('/recentBurials', getRecentBurials);
 
+// 15. تحديث حالة المقبرة لتصبح ممتلئة
+router.put('/full/:id', updateGraveToFull);
+//. جلب مقبره عن طريق ال id 
+router.get('/graves/:id', getGraveById);
+
 module.exports = router;
 
+ 
