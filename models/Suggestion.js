@@ -5,8 +5,12 @@ const suggestionSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  submittedBy: {
-    type: String,  // يمكن تخزين اسم المستخدم أو معرف المستخدم
+  name: {  // حقل الاسم
+    type: String,
+    required: true,
+  },
+  phone: {  // حقل رقم الهاتف
+    type: String,
     required: true,
   },
   dateSubmitted: {

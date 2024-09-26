@@ -126,13 +126,25 @@ const getGraveById = async (req, res) => {
 };
 
 
-// جلب المقابر الخاصة بالنساء
 const getFemaleGraves = async (req, res) => {
   try {
     const femaleGraves = await Grave.find({ gender: 'نساء' });
-    res.status(200).json(femaleGraves);
+
+    const gravesWithAvailability = femaleGraves.map(grave => {
+      const daysUntilAvailable = grave.availableAfter 
+        ? Math.ceil((new Date(grave.availableAfter) - new Date()) / (1000 * 60 * 60 * 24))
+        : null; // إذا لم يكن حقل availableAfter موجودًا
+
+      return {
+        ...grave.toObject(), // إرجاع جميع تفاصيل القبر
+        daysUntilAvailable, // إضافة عدد الأيام المتبقية
+      };
+    });
+
+    res.status(200).json(gravesWithAvailability);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching female graves', error });
+    console.error('Backend Error:', error); // تسجيل الخطأ الفعلي
+    res.status(500).json({ message: 'Error fetching female graves', error: error.message });
   }
 };
 
@@ -140,9 +152,22 @@ const getFemaleGraves = async (req, res) => {
 const getMaleGraves = async (req, res) => {
   try {
     const maleGraves = await Grave.find({ gender: 'رجال' });
-    res.status(200).json(maleGraves);
+
+    const gravesWithAvailability = maleGraves.map(grave => {
+      const daysUntilAvailable = grave.availableAfter 
+        ? Math.ceil((new Date(grave.availableAfter) - new Date()) / (1000 * 60 * 60 * 24))
+        : null; // إذا لم يكن حقل availableAfter موجودًا
+
+      return {
+        ...grave.toObject(), // إرجاع جميع تفاصيل القبر
+        daysUntilAvailable, // إضافة عدد الأيام المتبقية
+      };
+    });
+
+    res.status(200).json(gravesWithAvailability);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching male graves', error });
+    console.error('Backend Error:', error); // تسجيل الخطأ الفعلي
+    res.status(500).json({ message: 'Error fetching male graves', error: error.message });
   }
 };
 

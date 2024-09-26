@@ -4,7 +4,7 @@ const {createSuggestion,
     getAllSuggestions,
     getSuggestionsByStatus,
     updateSuggestionStatus,
-  
+    getApprovedSuggestions
   } = require('../controllers/SuggestionController');
 
 // 1. إضافة اقتراح جديد
@@ -12,6 +12,7 @@ router.post('/', createSuggestion);
 
 // 2. جلب جميع الاقتراحات
 router.get('/', getAllSuggestions);
+router.get('/Approved', getApprovedSuggestions);
 
 // 3. جلب الاقتراحات بناءً على حالتها
 router.get('/status/:status', getSuggestionsByStatus);
