@@ -1,0 +1,36 @@
+.footer {
+    background-color: #282c34; /* لون خلفية داكن */
+    color: white; /* لون النص أبيض */
+    padding: 20px;
+    text-align: center;
+    position: relative; /* لضبط موضع الفوتر بشكل صحيح */
+    bottom: 0; /* جعل الفوتر في الأسفل */
+    left: 0;
+    right: 0;
+  }
+  
+  .footer-content {
+    max-width: 800px; /* أقصى عرض للفوتر */
+    margin: auto; /* توسيط المحتوى */
+  }
+  
+  .footer a {
+    color: #61dafb; /* لون الروابط */
+    text-decoration: none;
+  }
+  
+  .footer a:hover {
+    text-decoration: underline; /* تأثير عند تمرير الماوس */
+  }
+  
+  /* استجابة التصميم */
+  @media (max-width: 600px) {
+    .footer {
+      padding: 15px; /* تقليل الحشوة على الشاشات الصغيرة */
+    }
+  
+    .footer h4, .footer p {
+      font-size: 14px; /* تقليل حجم الخط */
+    }
+  }
+  

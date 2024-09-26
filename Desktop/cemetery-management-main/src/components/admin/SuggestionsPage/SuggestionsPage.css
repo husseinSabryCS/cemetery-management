@@ -1,0 +1,120 @@
+/* تنسيق الصفحة الأساسية */
+.suggestions-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* تنسيق العنوان */
+  h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  /* تنسيق الرسائل الخطأ */
+  .error-message {
+    color: red;
+    text-align: center;
+    margin-bottom: 15px;
+  }
+  
+  /* تنسيق قائمة اختيار الحالة */
+  .status-filter {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .status-filter label {
+    font-weight: bold;
+    color: #555;
+  }
+  
+  .status-filter select {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    color: #333;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+  }
+  
+  .status-filter select:focus {
+    border-color: #007bff;
+    outline: none;
+  }
+  
+  /* تنسيق قائمة الاقتراحات */
+  .suggestions-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .suggestion-item {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 15px;
+    margin-bottom: 10px;
+    transition: box-shadow 0.3s ease;
+  }
+  
+  .suggestion-item:hover {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* تنسيق النص داخل عناصر الاقتراح */
+  .suggestion-item p {
+    margin: 5px 0;
+    color: #444;
+  }
+  
+  .suggestion-item strong {
+    color: #222;
+  }
+  
+  /* تنسيق مجموعة الأزرار */
+  .button-group {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+  }
+  
+  /* تنسيق زر القبول */
+  .approve-button {
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .approve-button:hover {
+    background-color: #218838;
+  }
+  
+  /* تنسيق زر الرفض */
+  .reject-button {
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .reject-button:hover {
+    background-color: #c82333;
+  }
+  

@@ -1,0 +1,68 @@
+/* ContactUs.css */
+
+.contact-form {
+    max-width: 500px; /* الحد الأقصى لعرض النموذج */
+    margin: 0 auto; /* توسيط النموذج */
+    padding: 20px; /* إضافة هوامش داخلية */
+    border: 1px solid #ccc; /* حدود للنموذج */
+    border-radius: 8px; /* زوايا مدورة */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* ظل خفيف */
+    background-color: #f9f9f9; /* لون خلفية النموذج */
+  }
+  
+  .contact-form h2 {
+    text-align: center; /* توسيط العنوان */
+    margin-bottom: 20px; /* مسافة أسفل العنوان */
+    color: #333; /* لون نص العنوان */
+  }
+  
+  .contact-form form {
+    display: flex; /* استخدام فليكس لعرض العناصر في العمود */
+    flex-direction: column; /* توجيه العناصر عمودياً */
+  }
+  
+  .contact-form textarea {
+    resize: none; /* عدم تغيير حجم textarea */
+    height: 100px; /* تحديد ارتفاع textarea */
+    padding: 10px; /* إضافة هوامش داخلية */
+    margin-bottom: 15px; /* مسافة أسفل textarea */
+    border: 1px solid #ccc; /* حدود textarea */
+    border-radius: 4px; /* زوايا مدورة */
+    font-size: 16px; /* حجم الخط */
+  }
+  
+  .contact-form input[type="text"],
+  .contact-form input[type="tel"] {
+    padding: 10px; /* إضافة هوامش داخلية */
+    margin-bottom: 15px; /* مسافة أسفل المدخلات */
+    border: 1px solid #ccc; /* حدود المدخلات */
+    border-radius: 4px; /* زوايا مدورة */
+    font-size: 16px; /* حجم الخط */
+  }
+  
+  .contact-form button {
+    padding: 10px; /* إضافة هوامش داخلية */
+    background-color: #007bff; /* لون الخلفية للزر */
+    color: white; /* لون النص */
+    border: none; /* إزالة الحدود */
+    border-radius: 4px; /* زوايا مدورة */
+    cursor: pointer; /* تغيير شكل المؤشر عند التمرير فوق الزر */
+    font-size: 16px; /* حجم الخط */
+    transition: background-color 0.3s ease; /* تأثير الانتقال عند تغيير لون الزر */
+  }
+  
+  .contact-form button:hover {
+    background-color: #0056b3; /* لون الزر عند التمرير فوقه */
+  }
+  
+  .feedback-message {
+    margin-top: 20px; /* مسافة أعلى الرسالة */
+    text-align: center; /* توسيط الرسالة */
+    font-size: 16px; /* حجم الخط */
+    color: green; /* لون الرسالة الناجحة */
+  }
+  
+  .feedback-message.error {
+    color: red; /* لون الرسالة الخطأ */
+  }
+  

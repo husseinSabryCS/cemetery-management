@@ -1,0 +1,33 @@
+.burials-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* يضيف تباعد بين البطاقات */
+    align-items: center; /* يحاذي العناصر في الوسط */
+  }
+  
+  .burial-card {
+    background-color: #f9f9f9; /* لون خلفية البطاقة */
+    border-radius: 8px;
+    padding: 15px;
+    width: 300px; /* عرض ثابت للبطاقة */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s; /* تأثير الحركة عند التحويم */
+    text-align: center; /* يحاذي النص داخل البطاقة إلى الوسط */
+  }
+  
+  .burial-card:hover {
+    transform: translateY(-5px); /* حركة بسيطة عند التحويم */
+  }
+  
+  .buried-person {
+    display: flex;
+    flex-direction: column; /* تغيير الاتجاه إلى عمودي */
+    align-items: center; /* محاذاة العناصر في الوسط */
+    margin-top: 10px;
+  }
+  
+  .avatar {
+    border-radius: 50%; /* يجعل الصورة دائرية */
+    margin-bottom: 10px; /* تباعد بين الصورة والنص */
+  }
+  

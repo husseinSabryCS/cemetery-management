@@ -1,0 +1,124 @@
+/* Header Styling */
+/* Header Styling */
+.header {
+    text-align: center;
+    background-color: var(--header-background); /* لون الخلفية */
+    padding: 2rem 0;
+    border-bottom: 1px solid var(--main-color); /* خط سفلي */
+}
+
+.head-p {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.logo {
+    max-width: 150px;
+    height: auto;
+    margin-bottom: 1rem;
+}
+
+.head-p p {
+    font-size: 1.8rem;
+    color: var(--main-color); /* لون النص */
+    text-transform: uppercase;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+.head-p p sub {
+    font-size: 1.2rem;
+    color: var(--text-color); /* لون النص الفرعي */
+    margin-top: 0.5rem;
+    font-style: italic;
+}
+
+/* General styling for the navigation bar */
+.nav {
+    background-color: #f8f9fa;
+    padding: 10px 0;
+  }
+  
+  .nav .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .nav .links ul {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+  }
+  
+  .nav .links ul li a {
+    text-decoration: none;
+    color: #333;
+    font-size: 18px;
+    transition: color 0.3s ease;
+  }
+  
+  .nav .links ul li a:hover {
+    color: #007bff;
+  }
+  
+  .nav .links ul li a.active {
+    color: #007bff;
+  }
+  
+  .nav .sreech {
+    display: flex;
+    align-items: center;
+  }
+  
+  .nav .sreech i {
+    font-size: 24px;
+    color: #007bff;
+    cursor: pointer;
+  }
+  
+  .nav input[type="text"] {
+    padding: 5px 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-right: 10px;
+  }
+  
+  .nav input[type="text"]::placeholder {
+    color: #aaa;
+  }
+
+  /* Combining container styles */
+.container {
+    padding: 0 15px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+@media (min-width: 576px) {
+    .container { max-width: 540px; }
+}
+
+@media (min-width: 768px) {
+    .container { max-width: 720px; }
+}
+
+@media (min-width: 992px) {
+    .container { max-width: 960px; }
+}
+
+@media (min-width: 1200px) {
+    .container { max-width: 1140px; }
+}
+
+/* @font-face {
+    font-family: 'Cairo';
+    src: url('../assets/fonts/Cairo-Black.ttf') format('truetype');
+    font-weight: 900; 
+    font-style: normal;
+  }
+   */
