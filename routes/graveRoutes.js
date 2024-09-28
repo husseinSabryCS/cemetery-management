@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const authenticateAndAuthorize = require('../Middleware/authMiddleware');
 const {
   createGrave,
   buryPerson,
@@ -20,10 +21,10 @@ const {
 } = require('../controllers/graveController');
 
 // 1. إنشاء مقبرة جديدة
-router.post('/', createGrave);
+router.post('/',authenticateAndAuthorize(['admin', 'manager']),createGrave);
 
 // 2. إضافة شخص مدفون لمقبرة معينة
-router.post('/:id/bury', buryPerson);
+router.post('/:id/bury',authenticateAndAuthorize(['admin', 'manager']), buryPerson);
 
 // 3. التحقق من حالة المقبرة (متاحة أم لا)
 router.get('/:id/availability', checkAvailability);
@@ -62,7 +63,7 @@ router.get('/femaleDeaths', getFemaleDeaths);
 router.get('/recentBurials', getRecentBurials);
 
 // 15. تحديث حالة المقبرة لتصبح ممتلئة
-router.put('/full/:id', updateGraveToFull);
+router.put('/full/:id', authenticateAndAuthorize(['admin', 'manager']),updateGraveToFull);
 //. جلب مقبره عن طريق ال id 
 router.get('/graves/:id', getGraveById);
 

@@ -15,17 +15,22 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  role: {
+    type: String,
+    enum: ['user', 'admin', 'manager'], // الأدوار الممكنة
+    default: 'user', // الدور الافتراضي
+  },
 });
 
 // تشفير كلمة المرور قبل حفظها في قاعدة البيانات
-userSchema.pre('save', async function(next) {
+userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
   this.password = await bcrypt.hash(this.password, 10);
   next();
 });
 
 // التحقق من كلمة المرور
-userSchema.methods.comparePassword = function(candidatePassword) {
+userSchema.methods.comparePassword = function (candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
 };
 

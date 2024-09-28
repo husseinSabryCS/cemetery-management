@@ -1,17 +1,36 @@
 const jwt = require('jsonwebtoken');
 
-// Middleware للتحقق من صلاحية التوكن
-const authenticate = (req, res, next) => {
-  const token = req.headers['authorization']?.split(' ')[1];
+// Middleware للتحقق من صلاحية التوكن والأدوار
+const authenticateAndAuthorize = (allowedRoles) => {
+  return (req, res, next) => {
+    // الحصول على التوكن من الهيدر
+    const token = req.headers['authorization']?.split(' ')[1];
 
-  if (!token) return res.status(401).json({ message: 'No token provided' });
+    // إذا لم يتم توفير التوكن، أعد رسالة خطأ
+    if (!token) {
+      return res.status(401).json({ message: 'No token provided' });
+    }
 
-  jwt.verify(token, 'your_jwt_secret', (err, decoded) => {
-    if (err) return res.status(401).json({ message: 'Failed to authenticate token' });
+    // التحقق من التوكن
+    jwt.verify(token, 'your_jwt_secret', (err, decoded) => {
+      // إذا كان هناك خطأ في التوكن
+      if (err) {
+        return res.status(401).json({ message: 'Failed to authenticate token' });
+      }
 
-    req.userId = decoded.userId; // يمكنك استخدام req.userId للوصول إلى ID المستخدم
-    next();
-  });
+      // استخراج الـ userId و الـ role من التوكن
+      req.userId = decoded.userId;
+      req.userRole = decoded.role; // نفترض أن التوكن يحتوي على دور المستخدم
+
+      // التحقق مما إذا كان دور المستخدم موجود ضمن الأدوار المسموح بها
+      if (allowedRoles && !allowedRoles.includes(req.userRole)) {
+        return res.status(403).json({ message: 'Access denied' });
+      }
+
+      // السماح بالوصول للروت التالي
+      next();
+    });
+  };
 };
 
-module.exports = authenticate;
+module.exports = authenticateAndAuthorize;
