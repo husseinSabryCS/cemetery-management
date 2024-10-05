@@ -292,6 +292,53 @@ cron.schedule('0 0 * * *', async () => {
     console.error('Error updating grave statuses:', error);
   }
 });
+const removeBuriedPerson = async (req, res) => {
+  try {
+    const { buriedPersonId } = req.body;  // ID الخاص بالمدفون
+    const grave = await Grave.findById(req.params.id);  // الحصول على المقبرة باستخدام الـ ID
+
+    if (!grave) return res.status(404).json({ message: 'Grave not found' });
+
+    // البحث عن المدفون بناءً على الـ ID الخاص به
+    const buriedPersonIndex = grave.buriedPersons.findIndex(person => person._id.toString() === buriedPersonId);
+
+    if (buriedPersonIndex === -1) {
+      return res.status(404).json({ message: 'Buried person not found' });
+    }
+
+    // حذف المدفون
+    grave.buriedPersons.splice(buriedPersonIndex, 1);
+
+    // تحقق من المدفونين الآخرين وتحديث حالة المقبرة
+    if (grave.buriedPersons.length > 0) {
+      const lastBurialDate = grave.buriedPersons[grave.buriedPersons.length - 1].burialDate;
+      const sixMonthsLater = new Date(new Date(lastBurialDate).getTime() + 6 * 30 * 24 * 60 * 60 * 1000);
+      const daysUntilAvailable = Math.ceil((sixMonthsLater - new Date()) / (1000 * 60 * 60 * 24));
+
+      if (daysUntilAvailable <= 0) {
+        grave.status = 'متاحة';
+        grave.availableAfter = null;
+      } else {
+        grave.status = 'غير متاحة';
+        grave.availableAfter = sixMonthsLater;
+      }
+    } else {
+      // إذا لم يعد هناك مدفونين، تغيير الحالة إلى "متاحة"
+      grave.status = 'متاحة';
+      grave.availableAfter = null;
+    }
+
+    // حفظ التعديلات في قاعدة البيانات
+    await grave.save();
+
+    res.status(200).json({ message: 'Buried person deleted and grave updated', grave });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error deleting buried person or updating grave', error });
+  }
+};
+
+
 
 
 
@@ -311,5 +358,6 @@ module.exports = {
   getFemaleDeaths,
   getRecentBurials,
   updateGraveToFull,
-  getGraveById
+  getGraveById,
+  removeBuriedPerson
 };

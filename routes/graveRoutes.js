@@ -17,7 +17,8 @@ const {
   getFemaleDeaths,
   getRecentBurials,
   updateGraveToFull,
-  getGraveById
+  getGraveById,
+  removeBuriedPerson
 } = require('../controllers/graveController');
 
 // 1. إنشاء مقبرة جديدة
@@ -67,6 +68,7 @@ router.put('/full/:id', authenticateAndAuthorize(['admin', 'manager']),updateGra
 //. جلب مقبره عن طريق ال id 
 router.get('/graves/:id', getGraveById);
 
+router.delete('/:id/remove-buried',authenticateAndAuthorize(['admin', 'manager']), removeBuriedPerson);
 module.exports = router;
 
  

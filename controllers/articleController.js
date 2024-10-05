@@ -11,7 +11,7 @@ const createArticle = async (req, res) => {
     if (!title || !content) {
       return res.status(400).json({ message: 'Title and content are required.' });
     }
-
+   
     // إنشاء المقال وحفظه في قاعدة البيانات
     const newArticle = new Article({ title, content });
     await newArticle.save();

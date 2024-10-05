@@ -1,42 +1,62 @@
+const User = require('../models/User'); // تأكد من المسار الصحيح
+const nodemailer = require('nodemailer');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
 
-// تسجيل الدخول
+require('dotenv').config();
+// إعداد Nodemailer
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'husseinsabry525@gmail.com', // البريد الإلكتروني الخاص بك
+    pass: 'guro jkjj jphq olcv', // كلمة المرور الخاصة بك
+  },
+});
+
+// دالة لتشفير كلمة المرور
+const hashPassword = async (password) => {
+  return await bcrypt.hash(password, 10);
+};
+console.log(hashPassword);
+
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // التحقق من وجود المستخدم
+    console.log("Login attempt with email:", email, "and password:", password);
+
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ message: 'Invalid email or password' });
 
-    // التحقق من صحة كلمة المرور
-    const isMatch = await user.comparePassword(password);
+    console.log("Logged in user:", user);
+    console.log("Stored password:", user.password);
+
+    const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ message: 'Invalid email or password' });
 
-    // إنشاء رمز JWT يحتوي على الـ userId والدور
-    const token = jwt.sign(
-      { userId: user._id, role: user.role },
-      process.env.jwt_secret,
-      { expiresIn: '10h' }
-    );
+    const token = jwt.sign({ userId: user._id, role: user.role }, process.env.jwt_secret, { expiresIn: '1h' });
 
     res.status(200).json({ token, role: user.role });
   } catch (error) {
-    res.status(500).json({ message: 'Error logging in', error });
+    console.error("Error logging in:", error);
+    res.status(500).json({ message: 'Error logging in', error: error.message });
   }
 };
-// إنشاء مستخدم جديد  
+
+// دالة لإنشاء مستخدم جديد
 const createUser = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body; // استقبال الدور من الطلب إذا تم تحديده
+    const { name, email, password, role } = req.body;
 
     // التحقق من وجود البريد الإلكتروني بالفعل
     const existingUser = await User.findOne({ email });
     if (existingUser) return res.status(400).json({ message: 'Email already in use' });
 
-    // إنشاء مستخدم جديد مع الدور
-    const user = new User({ name, email, password, role }); // حفظ الدور مع باقي البيانات
+    // تشفير كلمة المرور الجديدة
+    const hashedPassword = await hashPassword(password);
+
+    // إنشاء مستخدم جديد مع الدور وكلمة المرور المشفرة
+    const user = new User({ name, email, password: hashedPassword, role });
     await user.save();
 
     res.status(201).json({ message: 'User created successfully' });
@@ -44,4 +64,43 @@ const createUser = async (req, res) => {
     res.status(500).json({ message: 'Error creating user', error });
   }
 };
-module.exports = {createUser,login}
+
+// دالة لتحديث كلمة المرور وإرسالها عبر البريد الإلكتروني
+const updatePasswordAndSendEmail = async (req, res) => {
+  const { email, newPassword } = req.body;
+
+  try {
+    // البحث عن المستخدم بواسطة البريد الإلكتروني
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // تشفير كلمة المرور الجديدة
+    const hashedPassword = await hashPassword(newPassword);
+
+    // تحديث كلمة المرور في قاعدة البيانات
+    user.password = hashedPassword;
+    await user.save();
+
+    // إعداد رسالة البريد الإلكتروني
+    const mailOptions = {
+      from: 'husseinsabry525@gmail.com',
+      to: email,
+      subject: 'Your New Password',
+      text: `Your new password is: ${newPassword}`,
+    };
+
+    // إرسال البريد الإلكتروني
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        return res.status(500).json({ message: 'Error sending email', error: error.message });
+      }
+      return res.status(200).json({ message: 'Password updated and sent to email successfully' });
+    });
+  } catch (error) {
+    return res.status(500).json({ message: 'Error updating password', error: error.message });
+  }
+};
+
+module.exports = { createUser, login, updatePasswordAndSendEmail };
