@@ -4,8 +4,17 @@ const cron = require('node-cron');
 const createGrave = async (req, res) => {
   try {
     const { gender, number } = req.body;
+
+    // تحقق مما إذا كان القبر برقم معين موجود بالفعل
+    const existingGrave = await Grave.findOne({ number });
+    if (existingGrave) {
+      return res.status(400).json({ message: 'رقم المقبرة موجود بالفعل ' });
+    }
+
+    // إذا لم يكن موجوداً، قم بإنشاء القبر الجديد
     const newGrave = new Grave({ gender, number });
     await newGrave.save();
+
     res.status(201).json(newGrave);
   } catch (error) {
     res.status(500).json({ message: 'Error creating grave', error });
