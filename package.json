@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "build": "echo 'No build step required for a Node.js backend'"
+    "build": "[my-framework] build --output public"
   },
   "keywords": [],
   "author": "",
