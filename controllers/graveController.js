@@ -108,6 +108,31 @@ const getAllGraves = async (req, res) => {
     res.status(500).json({ message: 'Error fetching graves', error });
   }
 };
+const getAvailableGravesCount = async (req, res) => {
+  try {
+    // عد المقابر التي حالتها "متاحة"
+    const availableGravesCount = await Grave.countDocuments({ status: 'متاحة' });
+
+    // إرجاع العدد في استجابة JSON
+    res.status(200).json({ availableGravesCount });
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching available graves count', error });
+  }
+};
+const getUnavailableGravesCount = async (req, res) => {
+  try {
+    // عد المقابر التي حالتها إما "غير متاحة" أو "ممتلئة"
+    const unavailableGravesCount = await Grave.countDocuments({
+      status: { $in: ['غير متاحة', 'ممتلئة'] },
+    });
+
+    // إرجاع العدد في استجابة JSON
+    res.status(200).json({ unavailableGravesCount });
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching unavailable and full graves count', error });
+  }
+};
+
 
 // جلب جميع المقابر مع الأشخاص المدفونين في كل منها
 const getGravesWithBuriedPersons = async (req, res) => {
@@ -368,5 +393,7 @@ module.exports = {
   getRecentBurials,
   updateGraveToFull,
   getGraveById,
-  removeBuriedPerson
+  removeBuriedPerson,
+  getAvailableGravesCount,
+  getUnavailableGravesCount,
 };

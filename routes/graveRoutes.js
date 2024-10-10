@@ -18,7 +18,9 @@ const {
   getRecentBurials,
   updateGraveToFull,
   getGraveById,
-  removeBuriedPerson
+  removeBuriedPerson,
+  getAvailableGravesCount,
+  getUnavailableGravesCount
 } = require('../controllers/graveController');
 
 // 1. إنشاء مقبرة جديدة
@@ -69,6 +71,11 @@ router.put('/full/:id', authenticateAndAuthorize(['admin', 'manager']),updateGra
 router.get('/graves/:id', getGraveById);
 
 router.delete('/:id/remove-buried',authenticateAndAuthorize(['admin', 'manager']), removeBuriedPerson);
+// مسار API لعدد المقابر المتاحة
+router.get('/available-count', getAvailableGravesCount);
+
+// مسار API لعدد المقابر غير المتاحة
+router.get('/unavailable-count', getUnavailableGravesCount);
 module.exports = router;
 
  
