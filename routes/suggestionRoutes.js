@@ -1,14 +1,14 @@
-// const express = require('express');
+const express = require('express');
 // const authenticateAndAuthorize = require('../Middleware/authMiddleware');
 // const SuggestionController = require('../controllers/suggestionController.js');
 
-// const router = express.Router();
-// // const {createSuggestion,
-// //     getAllSuggestions,
-// //     getSuggestionsByStatus,
-// //     updateSuggestionStatus,
-// //     getApprovedSuggestions
-// //   } =require('../controllers/SuggestionController');
+const router = express.Router();
+// const {createSuggestion,
+//     getAllSuggestions,
+//     getSuggestionsByStatus,
+//     updateSuggestionStatus,
+//     getApprovedSuggestions
+//   } =require('../controllers/SuggestionController');
 
 
 // // 1. إضافة اقتراح جديد
@@ -24,4 +24,4 @@
 // // 4. تحديث حالة اقتراح (للإدمن)
 // router.put('/status/:id',authenticateAndAuthorize(['manager']) ,SuggestionController.updateSuggestionStatus);
 
-// module.exports = router;
+module.exports = router;
