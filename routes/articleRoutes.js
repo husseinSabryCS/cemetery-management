@@ -14,3 +14,4 @@ router.get('/ArticleDetail/:id', getArticleById); // لجلب مقال بواس�
 router.delete('/:id',authenticateAndAuthorize(['manager']), deleteArticle);
 
 module.exports = router; 
+  

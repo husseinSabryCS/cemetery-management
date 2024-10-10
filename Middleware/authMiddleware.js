@@ -25,5 +25,4 @@ console.log(req.userId,req.userRole);
     });
   };
 };
-
 module.exports = authenticateAndAuthorize;
