@@ -1,5 +1,4 @@
 const Suggestion = require('../models/Suggestion');
-
 // إضافة اقتراح جديد
 
 const createSuggestion = async (req, res) => {

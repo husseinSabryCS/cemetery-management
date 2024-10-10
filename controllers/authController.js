@@ -17,19 +17,17 @@ const transporter = nodemailer.createTransport({
 const hashPassword = async (password) => {
   return await bcrypt.hash(password, 10);
 };
-console.log(hashPassword);
+
 
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    console.log("Login attempt with email:", email, "and password:", password);
+   
 
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ message: 'Invalid email or password' });
 
-    console.log("Logged in user:", user);
-    console.log("Stored password:", user.password);
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ message: 'Invalid email or password' });
