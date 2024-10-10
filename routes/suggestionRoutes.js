@@ -6,7 +6,8 @@ const {createSuggestion,
     getSuggestionsByStatus,
     updateSuggestionStatus,
     getApprovedSuggestions
-  } = require('../controllers/SuggestionController');
+  } =require('../controllers/SuggestionController');
+
 
 // 1. إضافة اقتراح جديد
 router.post('/', createSuggestion);
